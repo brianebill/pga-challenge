@@ -1,0 +1,11 @@
+{
+  "name": "pga-challenge",
+  "version": 2,
+  "alias": ["pga.commons.one"],
+  "builds": [
+    { "src": "package.json", "use": "@now/next" }
+  ],
+  "github": {
+    "enabled": false
+  }
+}

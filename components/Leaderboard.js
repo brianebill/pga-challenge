@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import Head from 'next/head'
+import styled from 'styled-components'
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -54,6 +55,10 @@ const styles = theme => ({
   },
 });
 
+const Delete = styled.a`
+  cursor: pointer;
+`;
+
 function SimpleTable(props) {
   const { classes } = props;
 
@@ -89,7 +94,7 @@ function SimpleTable(props) {
 
                           <Mutation mutation={DELETE_PLAYER}>
                             {(deletePlayer, { data }) => (
-                              <a href='#' onClick={
+                              <Delete onClick={
                                 async () => {
                                   await deletePlayer({ variables: { id: p.id }})
                                   let el = document.getElementById(p.id)
@@ -97,7 +102,7 @@ function SimpleTable(props) {
                                 }
                               }>
                                 <DeleteIcon />
-                              </a>
+                              </Delete>
                             )}
                           </Mutation>
 
