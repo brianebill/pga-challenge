@@ -1,12 +1,12 @@
 import Layout from '../components/Layout'
 import Body from '../components/Body'
-import Leaderboard from '../components/Leaderboard'
+import AddPlayer from '../components/AddPlayer'
 
 export default () => (
   <div>
     <Layout>
       <Body>
-        <Leaderboard />
+        <AddPlayer/>
       </Body>
     </Layout>
   </div>

@@ -1,6 +1,13 @@
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Router from 'next/router'
 import styled from 'styled-components'
 
-const Nav = styled.div`
+const Wrapper = styled.div`
+  margin: 40px 0 0 0;
+`;
+
+const NavWrapper = styled.div`
   margin: auto;
   width: 997px;
   height: 35px;
@@ -16,18 +23,38 @@ const List = styled.div`
   top: 12px;
 `;
 
-const Link = styled.a`
-  margin-right: 10px;
+const NavLink = styled.span`
+  margin-right: 15px;
   font-size: .75em;
-  font-weight: 100;
 `;
 
-export default (props) => (
-  <Nav>
-    <List>
-      <Link href='/'>LEADERBOARD</Link>
-      <Link href='/admin'>ADMIN</Link>
-      <Link href='/lambda'>LAMBDA</Link>
-    </List>
-  </Nav>
-)
+export default (props) => {
+
+  const [active, setActive] = useState('')
+  useEffect(() => {
+    setActive(Router.asPath.slice(1))
+  })
+
+  return (
+    <Wrapper>
+      <NavWrapper>
+        <List>
+          <NavLink>
+            <Link href='/'>
+              <a className={active === '' ? 'active' : ''}>
+                LEADERBOARD
+              </a>
+            </Link>
+          </NavLink>
+          <NavLink>
+            <Link href='/add'>
+              <a className={active === 'add' ? 'active' : ''}>
+                ADD PLAYER
+              </a>
+            </Link>
+          </NavLink>
+        </List>
+      </NavWrapper>
+    </Wrapper>
+  )
+}

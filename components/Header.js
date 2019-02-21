@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Nav from '../components/Nav'
 
 const Wrapper = styled.section`
   width: 100%;
@@ -10,6 +9,7 @@ const Wrapper = styled.section`
 
 const Header = styled.div`
   width: 997px;
+  height: 145px;
   margin: auto;
   position: relative;
 `;
@@ -19,6 +19,5 @@ export default (props) => (
     <Header>
       <img src='https://i2.cdn.turner.com/dr/pga/sites/default/themes/sitetheme/logo.png' />
     </Header>
-    <Nav />
   </Wrapper>
 )
