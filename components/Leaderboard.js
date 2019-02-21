@@ -12,14 +12,17 @@ import { ApolloProvider, Mutation, Query, graphql, compose } from 'react-apollo'
 import { AWSAppSyncClient } from "aws-appsync";
 import appSyncConfig from '../appSyncConfig';
 import gql from "graphql-tag";
+import fetch from 'node-fetch'
+
+if (!process.browser) { global.fetch = fetch }
 
 const client = new AWSAppSyncClient(
   { ...appSyncConfig, disableOffline: true },
   { ssrMode: true }
 );
 
-const DELETE_USER = gql`
-  mutation deletePlayer ($id: ID){
+const DELETE_PLAYER = gql`
+  mutation deletePlayer ($id: ID!){
     deletePlayer(id: $id) {
       id
     }
@@ -41,28 +44,14 @@ const GET_PLAYERS = gql`
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    maxWidth: '997px',
+    margin: 'auto',
     overflowX: 'auto',
   },
   table: {
-    minWidth: 700,
+    minWidth: 400
   },
 });
-
-let id = 0;
-function createData(name, score) {
-  id += 1;
-  return { id, name, score };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 function SimpleTable(props) {
   const { classes } = props;
@@ -70,9 +59,9 @@ function SimpleTable(props) {
   return (
     <ApolloProvider client={client}>
 
-      <Query query={GET_PLAYERS} variables={{ id }}>
+      <Query query={GET_PLAYERS}>
         {({ loading, error, data }) => {
-          if (loading) return "Loading...";
+          if (loading) return (<p style={{ textAlign: 'center' }}>"Loading..."</p>)
           if (error) return `Error! ${error.message}`;
           let players = data.getPlayers.items;
 
@@ -95,7 +84,13 @@ function SimpleTable(props) {
                           </TableCell>
                           <TableCell align="right">{p.score}</TableCell>
                           <TableCell align="right">
-                            <a href='#'>delete</a>
+
+                          <Mutation mutation={DELETE_PLAYER}>
+                            {(deletePlayer, { data }) => (
+                              <a href='#' onClick={() => deletePlayer({ variables: { id: p.id }})}>delete</a>
+                            )}
+                          </Mutation>
+
                           </TableCell>
                         </TableRow>
                       ))}

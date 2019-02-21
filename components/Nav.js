@@ -32,7 +32,12 @@ export default (props) => {
 
   const [active, setActive] = useState('')
   useEffect(() => {
-    setActive(Router.asPath.slice(1))
+    if (Router.asPath.slice(1)) {
+      setActive(Router.asPath.slice(1))
+    } else {
+      setActive('leader')
+    }
+
   })
 
   return (
@@ -41,7 +46,7 @@ export default (props) => {
         <List>
           <NavLink>
             <Link href='/'>
-              <a className={active === '' ? 'active' : ''}>
+              <a className={active === 'leader' ? 'active' : ''}>
                 LEADERBOARD
               </a>
             </Link>
