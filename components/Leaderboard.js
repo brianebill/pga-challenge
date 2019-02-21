@@ -7,12 +7,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-//import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { ApolloProvider, Mutation, Query, graphql, compose } from 'react-apollo';
 import { AWSAppSyncClient } from "aws-appsync";
 import appSyncConfig from '../appSyncConfig';
 import gql from "graphql-tag";
 import fetch from 'node-fetch'
+import sortPlayers from '../functions/sortPlayers'
 
 if (!process.browser) { global.fetch = fetch }
 
@@ -64,6 +65,7 @@ function SimpleTable(props) {
           if (loading) return (<p style={{ textAlign: 'center' }}>"Loading..."</p>)
           if (error) return `Error! ${error.message}`;
           let players = data.getPlayers.items;
+          let sortedPlayers = players.sort(sortPlayers);
 
           return (
             <Paper className={classes.root}>
@@ -78,7 +80,7 @@ function SimpleTable(props) {
                 <TableBody>
 
                       {players.map(p => (
-                        <TableRow key={p.id}>
+                        <TableRow key={p.id} id={p.id}>
                           <TableCell component="th" scope="row">
                             {`${p.lastName}, ${p.firstName}`}
                           </TableCell>
@@ -87,7 +89,15 @@ function SimpleTable(props) {
 
                           <Mutation mutation={DELETE_PLAYER}>
                             {(deletePlayer, { data }) => (
-                              <a href='#' onClick={() => deletePlayer({ variables: { id: p.id }})}>delete</a>
+                              <a href='#' onClick={
+                                async () => {
+                                  await deletePlayer({ variables: { id: p.id }})
+                                  let el = document.getElementById(p.id)
+                                  el.parentNode.removeChild(el)
+                                }
+                              }>
+                                <DeleteIcon />
+                              </a>
                             )}
                           </Mutation>
 

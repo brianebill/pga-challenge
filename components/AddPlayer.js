@@ -26,7 +26,7 @@ const POST_PLAYER = gql`
 `;
 
 const AddPlayer = styled.div`
-  margin: 0 20px;
+  margin: auto;
   width: 300px;
   font-family: 'Roboto', sans-serif;
 `;
@@ -57,6 +57,17 @@ const Warn = styled.p`
   text-align: center;
 `;
 
+const Disabled = styled.input`
+  width: 295px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: 200;
+  background: rgba(200, 200, 200, 1);
+  color: white;
+  border-radius: 5px;
+  outline: none;
+`;
+
 const Button = styled.input`
   width: 295px;
   height: 50px;
@@ -80,8 +91,9 @@ const Flink = styled.a`
 
 export default () => {
 
-  const [ error, setError ] = useState('')
+  const [ error, setError ] = useState(false)
   const [ fulfilled, setFulfilled ] = useState(false)
+  const [ waiting, setWaiting ] = useState(false)
 
   const validateData = () => {
     const firstName = document.getElementById('first').value
@@ -90,17 +102,17 @@ export default () => {
     score = parseInt(score)
     if (firstName.length < 1 || typeof firstName !== 'string') {
       setError('please enter a first name')
-      setTimeout(() => { setError('')}, 1000)
+      setTimeout(() => { setError(false)}, 1000)
       return
     }
     if (lastName.length < 1 || typeof lastName !== 'string') {
       setError('please enter a last name')
-      setTimeout(() => { setError('')}, 1000)
+      setTimeout(() => { setError(false)}, 1000)
       return
     }
     if (!score || typeof score !== 'number') {
       setError('please enter a score')
-      setTimeout(() => { setError('')}, 1000)
+      setTimeout(() => { setError(false)}, 1000)
       return
     }
     return { firstName, lastName, score }
@@ -119,13 +131,16 @@ export default () => {
               onSubmit={
                 async e => {
                   e.preventDefault();
+                  setWaiting(true)
                   let data = await validateData()
-                  if (!error) {
+                  if (data) {
                     await postPlayer({ variables: { ...data }})
                     .then(fulfilled => {
                       setFulfilled(fulfilled.data.postPlayer)
                     })
                     .catch(rejected => console.log(rejected))
+                  } else {
+                    setWaiting(false)
                   }
                 }
               }
@@ -140,7 +155,7 @@ export default () => {
                 </div>
                 :
                 <div>
-                  <h2>Add the player's info:</h2>
+                  <h2>Add player data:</h2>
                   <Label>First Name:</Label> <br />
                   <In id='first' type='text' placeholder='first name'/> <br />
                   <Label>Last Name:</Label> <br />
@@ -148,7 +163,11 @@ export default () => {
                   <Label>Score:</Label> <br />
                   <In id='score' type='text' placeholder='enter score' /> <br />
                   <Warn>{error}</Warn>
-                  <Button type='submit' value='add player' />
+                  {waiting ?
+                    <Disabled type='button' value='add player' />
+                    : <Button type='submit' value='add player' />
+                  }
+
                 </div>
               }
 
