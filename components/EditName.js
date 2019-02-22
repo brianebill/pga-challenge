@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Head from 'next/head'
 import styled from 'styled-components'
 import { ApolloProvider, Mutation, Query, graphql, compose } from 'react-apollo'
@@ -14,13 +14,12 @@ const client = new AWSAppSyncClient(
   { ssrMode: true }
 );
 
-const POST_PLAYER = gql`
-  mutation postPlayer($id: ID, $firstName: String!, $lastName: String!, $score: Int!) {
-    postPlayer(id: $id, firstName: $firstName, lastName: $lastName, score: $score) {
+const EDIT_NAME = gql`
+  mutation editPlayer($firstName: String!, $lastName: String!) {
+    editName(firstName: $firstName, lastName: $lastName) {
      id
      firstName
      lastName
-     score
     }
   }
 `;
@@ -94,21 +93,6 @@ export default () => {
   const [ error, setError ] = useState(false)
   const [ fulfilled, setFulfilled ] = useState(false)
   const [ waiting, setWaiting ] = useState(false)
-  const [ first, setFirst ] = useState('')
-  const [ last, setLast ] = useState('')
-  const [ score, setScore] = useState('')
-  const [ id, setId] = useState('')
-  useEffect(() => {
-    if (window.localStorage.getItem('player')) {
-      let player = window.localStorage.getItem('player')
-      player = JSON.parse(player)
-      setId(player.id)
-      setFirst(player.firstName)
-      setLast(player.lastName)
-      setScore(player.score)
-      window.localStorage.removeItem('player')
-    }
-  }, {})
 
   const validateData = () => {
     const firstName = document.getElementById('first').value
@@ -130,23 +114,7 @@ export default () => {
       setTimeout(() => { setError(false)}, 1000)
       return
     }
-    return { id, firstName, lastName, score }
-  }
-
-  const postPlayerData = async (e,postPlayer) => {
-    e.preventDefault();
-    setWaiting(true)
-    let data = await validateData()
-    if (data) {
-      await postPlayer({ variables: { ...data }})
-      .then(fulfilled => {
-        setFulfilled(fulfilled.data.postPlayer)
-        setWaiting(false)
-      })
-      .catch(rejected => console.log(rejected))
-    } else {
-      setWaiting(false)
-    }
+    return { firstName, lastName, score }
   }
 
   return (
@@ -158,7 +126,24 @@ export default () => {
 
         <Mutation mutation={POST_PLAYER}>
           {(postPlayer, { data }) => (
-            <Form onSubmit={e => postPlayerData(e, postPlayer)}>
+            <Form
+              onSubmit={
+                async e => {
+                  e.preventDefault();
+                  setWaiting(true)
+                  let data = await validateData()
+                  if (data) {
+                    await postPlayer({ variables: { ...data }})
+                    .then(fulfilled => {
+                      setFulfilled(fulfilled.data.postPlayer)
+                    })
+                    .catch(rejected => console.log(rejected))
+                  } else {
+                    setWaiting(false)
+                  }
+                }
+              }
+            >
               {fulfilled ?
                 <div>
                   <h2>Player saved</h2>
@@ -169,31 +154,13 @@ export default () => {
                 </div>
                 :
                 <div>
-                  <h2>{id ? 'Edit' : 'Add'} player data:</h2>
+                  <h2>Add player data:</h2>
                   <Label>First Name:</Label> <br />
-                  <In
-                    id='first'
-                    type='text'
-                    placeholder='first name'
-                    value={first}
-                    onChange={e => setFirst(e.target.value)}
-                  /> <br />
+                  <In id='first' type='text' placeholder='first name'/> <br />
                   <Label>Last Name:</Label> <br />
-                  <In
-                    id='last'
-                    type='text'
-                    placeholder='last name'
-                    value={last}
-                    onChange={e => setLast(e.target.value)}
-                  /> <br />
+                  <In id='last' type='text' placeholder='last name' /> <br />
                   <Label>Score:</Label> <br />
-                  <In
-                    id='score'
-                    type='text'
-                    placeholder='enter score'
-                    value={score}
-                    onChange={e => setScore(e.target.value)}
-                  /> <br />
+                  <In id='score' type='text' placeholder='enter score' /> <br />
                   <Warn>{error}</Warn>
                   {waiting ?
                     <Disabled type='button' value='add player' />
