@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import Head from 'next/head'
+import Router from 'next/router'
 import styled from 'styled-components'
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -60,6 +61,10 @@ const Delete = styled.a`
   cursor: pointer;
 `;
 
+const Edit = styled.a`
+  cursor: pointer;
+`;
+
 function SimpleTable(props) {
   const { classes } = props;
 
@@ -80,7 +85,7 @@ function SimpleTable(props) {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell align="right">Score</TableCell>
-                    <TableCell align="right">Action</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -106,6 +111,16 @@ function SimpleTable(props) {
                               </Delete>
                             )}
                           </Mutation>
+
+                          <Edit
+                            onClick={
+                              () => {
+                                window.localStorage.setItem("player",JSON.stringify(p))
+                                Router.replace('/add')
+                            }}
+                          >
+                            <EditIcon />
+                          </Edit>
 
                           </TableCell>
                         </TableRow>
