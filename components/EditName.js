@@ -14,13 +14,12 @@ const client = new AWSAppSyncClient(
   { ssrMode: true }
 );
 
-const POST_PLAYER = gql`
-  mutation postPlayer($firstName: String!, $lastName: String!, $score: Int!) {
-    postPlayer(firstName: $firstName, lastName: $lastName, score: $score) {
+const EDIT_NAME = gql`
+  mutation editPlayer($firstName: String!, $lastName: String!) {
+    editName(firstName: $firstName, lastName: $lastName) {
      id
      firstName
      lastName
-     score
     }
   }
 `;
@@ -137,7 +136,6 @@ export default () => {
                     await postPlayer({ variables: { ...data }})
                     .then(fulfilled => {
                       setFulfilled(fulfilled.data.postPlayer)
-                      setWaiting(false)
                     })
                     .catch(rejected => console.log(rejected))
                   } else {
