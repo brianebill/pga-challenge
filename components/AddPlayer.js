@@ -141,12 +141,14 @@ export default () => {
       await postPlayer({ variables: { ...data }})
       .then(fulfilled => {
         setFulfilled(fulfilled.data.postPlayer)
-        setWaiting(false)
       })
       .catch(rejected => console.log(rejected))
-    } else {
-      setWaiting(false)
     }
+    setWaiting(false)
+    setId('')
+    setFirst('')
+    setLast('')
+    setScore('')
   }
 
   return (
@@ -196,8 +198,8 @@ export default () => {
                   /> <br />
                   <Warn>{error}</Warn>
                   {waiting ?
-                    <Disabled type='button' value='add player' />
-                    : <Button type='submit' value='add player' />
+                    <Disabled type='button' value={id ? 'edit player' : 'add player'} />
+                    : <Button type='submit' value={id ? 'edit player' : 'add player'} />
                   }
 
                 </div>
